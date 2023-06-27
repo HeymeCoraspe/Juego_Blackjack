@@ -1,67 +1,90 @@
+//patron módulo  FUNCIÓN ANÓNIMA AUTO INVOCADA, permite que no se pueda llamar al objeto dentro de la misma ni manipularlos en cosola
+(()=>{
+    "use strict"
+
 //creando el mazo
 let mazo=[];
-const tipos=["C", "D", "H", "S"]; especiales=["A", "J", "Q", "K"];
-let puntosJugador=0; 
-let puntosComputadora=0;
 
+const tipos=["C", "D", "H", "S"], 
+      especiales=["A", "J", "Q", "K"];
+
+let puntosJugadores=[];
 
 //referencias html
- const btnPedirCarta= document.querySelector ("#btnPedirCarta");
- const btnDetener= document.querySelector("#btnDetener"); 
- const btnNuevoJuego= document.querySelector("#btnNuevoJuego");
+const btnPedirCarta= document.querySelector ("#btnPedirCarta"), 
+      btnDetener= document.querySelector("#btnDetener"), 
+      btnNuevoJuego= document.querySelector("#btnNuevoJuego"); 
 
- const puntosHTML= document.querySelectorAll("small"); 
+const divCartasJugadores=document.querySelectorAll("divCartas"),
+      puntosHTML= document.querySelectorAll("small");
 
- const divCartasJugador=document.querySelector("#jugador-cartas");
- const divCartasComputadora= document.querySelector("#computadora-cartas");
+//función que inicia el juego
+const iniciarJuego=(numeroJugadores=2)=>{
+    mazo= crearMazo();
+    for(let i=0; i<numeroJugadores; i++){
+        puntosJugadores.push(0);
+    }
+}
 
-
+//creando el nuevo mazo
 const crearMazo= ()=>{
+    mazo=[];
+    
     for(let i=2; i<=10; i++){
         for (let tipo of tipos){
             mazo.push(i+tipo);
         }        
     }
     for(let tipo of tipos){
-        for(esp of especiales){
+        for(let esp of especiales){
             mazo.push(esp+tipo);  
         }
     }
-    mazo= _.shuffle(mazo); //librería underscore: _.shuffle devuelve el arreglo desordenado
-    return mazo;
+    return _.shuffle(mazo); //librería underscore: _.shuffle devuelve el arreglo desordenado
 }
-crearMazo();
 
 //pidiento una carta de la baraja
-
 const pedirCarta=()=>{
 
     if(mazo.length===0){
-        throw "No hay más cartas en el mazo"
+       throw "No hay más cartas en el mazo"
     }
-    const carta= mazo.pop(); //para remover la última carta del mazo
-    return carta;
+    return mazo.pop(); //para remover la última carta del mazo
 }
-pedirCarta();
+
 //asignando valores a las cartas
 const valorCarta =(carta)=>{
         const valor= carta.substring(0,carta.length -1);
         return(isNaN(valor))?(valor==="A") ? 11:10 : valor*1;
 }
+// 0= primero jugador, últim es computadora
+const acumularPuntos=(carta, turno)=>{
+    puntosJugadores[turno]= puntosJugadores[turno]+valorCarta(carta);
+    puntosHTML[turno].innerText= puntosJugadores[turno];
+    return puntosJugadores[turno];
+}
+
+//Función para crear una carta
+const crearCarta=(carta, turno)=>{
+
+    const imgCarta=document.createElement("img");
+        imgCarta.src=`assets/cartas/${carta}.png`;// `${}` agregar código JS a la imagen
+        imgCarta.classList.add("carta");
+        divCartasJugadores[turno].append(imgCarta);
+}
+
 //Turno computadora
 const turnoComputadora=(puntosMinimos)=>{
     do{
         const carta= pedirCarta();
-
-        puntosComputadora= puntosComputadora+ valorCarta(carta);
-        puntosHTML[1].innerText=puntosComputadora;
-
-        const imgCarta=document.createElement("img");
+        acumularPuntos(carta,puntosJugadores.length -1);
+        crearCarta(carta,puntosJugadores.length -1);
+        
+        /*const imgCarta=document.createElement("img");
         imgCarta.src=`assets/cartas/${carta}.png`;// `${}` agregar código JS a la imagen
         imgCarta.classList.add("carta");
-        divCartasComputadora.append(imgCarta);
-        console.log(carta);
-
+        divCartasComputadora.append(imgCarta);*/
+     
         if(puntosMinimos>21){
             break;
         }
@@ -77,20 +100,13 @@ const turnoComputadora=(puntosMinimos)=>{
         } else{
             alert("Computadora gana =(");
         }
-    }, 30);
+    }, 200);
 }
 //eventos click
 btnPedirCarta.addEventListener("click", ()=>{ //al hacer click en el boón, se realiza la acción dentro de la función
-   const carta= pedirCarta();
-
-   puntosJugador= puntosJugador+ valorCarta(carta);
-   puntosHTML[0].innerText=puntosJugador;
-
-   const imgCarta=document.createElement("img");
-   imgCarta.src=`assets/cartas/${carta}.png`;// `${}` agregar código JS a la imagen
-   imgCarta.classList.add("carta");
-   divCartasJugador.append(imgCarta);
-   console.log(carta);
+    const carta= pedirCarta();
+    const puntosJugador= acumularPuntos(carta, 0);
+    crearCarta(carta,0);
 
    if(puntosJugador>21){
         console.warn("Perdiste =(");
@@ -111,33 +127,27 @@ btnDetener.addEventListener("click",()=>{
     btnDetener.disabled=true;
 
     turnoComputadora(puntosJugador);
-})
+});
 
 btnNuevoJuego.addEventListener("click", ()=>{
-     console.clear();
-     
-    mazo=[];
-    mazo=crearMazo();
+   console.clear();
+    iniciarJuego();
+   // mazo=[];
+    //mazo=crearMazo();
 
-    puntosJugador=0;
-    puntosComputadora=0;
+    //puntosJugador=0;
+    //puntosComputadora=0;
 
-    puntosHTML[0].innerText=0;
-    puntosHTML[1].innerText=0;
+    //puntosHTML[0].innerText=0;
+    //puntosHTML[1].innerText=0;
 
-    divCartasJugador.innerText="";
-    divCartasComputadora.innerText="";
+    //divCartasJugador.innerText="";
+    //divCartasComputadora.innerText="";
 
-    btnPedirCarta.disabled=false;
-    btnDetener.disabled=false;
-    console.log(mazo);
-})
-
-// empieza sección 6
-
-
-
-
+    //btnPedirCarta.disabled=false;
+    //btnDetener.disabled=false;  
+});  
+})();
 
 
 
