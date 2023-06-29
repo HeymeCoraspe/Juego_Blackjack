@@ -1,5 +1,5 @@
 //patron módulo  FUNCIÓN ANÓNIMA AUTO INVOCADA, permite que no se pueda llamar al objeto dentro de la misma ni manipularlos en cosola
-(()=>{
+const miModulo= (()=>{
     "use strict"
 
 //creando el mazo
@@ -11,19 +11,28 @@ const tipos=["C", "D", "H", "S"],
 let puntosJugadores=[];
 
 //referencias html
-const btnPedirCarta= document.querySelector ("#btnPedirCarta"), 
+const btnPedirCarta= document.querySelector("#btnPedirCarta"), 
       btnDetener= document.querySelector("#btnDetener"), 
       btnNuevoJuego= document.querySelector("#btnNuevoJuego"); 
 
-const divCartasJugadores=document.querySelectorAll("divCartas"),
+const divCartasJugadores=document.querySelectorAll(".divCartas"),
       puntosHTML= document.querySelectorAll("small");
 
 //función que inicia el juego
 const iniciarJuego=(numeroJugadores=2)=>{
     mazo= crearMazo();
+    puntosJugadores=[];
+
     for(let i=0; i<numeroJugadores; i++){
         puntosJugadores.push(0);
     }
+
+    puntosHTML.forEach(elem=>elem.innerText=0);
+    divCartasJugadores.forEach(elem=>elem.innerHTML="");
+
+    btnPedirCarta.disabled=false;
+    btnDetener.disabled=false; 
+
 }
 
 //creando el nuevo mazo
@@ -70,25 +79,11 @@ const crearCarta=(carta, turno)=>{
     const imgCarta=document.createElement("img");
         imgCarta.src=`assets/cartas/${carta}.png`;// `${}` agregar código JS a la imagen
         imgCarta.classList.add("carta");
-        divCartasJugadores[turno].append(imgCarta);
+        divCartasJugadores[turno].append(imgCarta);//minuto 10:17
 }
+const determinarGanador=()=>{
 
-//Turno computadora
-const turnoComputadora=(puntosMinimos)=>{
-    do{
-        const carta= pedirCarta();
-        acumularPuntos(carta,puntosJugadores.length -1);
-        crearCarta(carta,puntosJugadores.length -1);
-        
-        /*const imgCarta=document.createElement("img");
-        imgCarta.src=`assets/cartas/${carta}.png`;// `${}` agregar código JS a la imagen
-        imgCarta.classList.add("carta");
-        divCartasComputadora.append(imgCarta);*/
-     
-        if(puntosMinimos>21){
-            break;
-        }
-    } while((puntosComputadora < puntosMinimos) && puntosMinimos <= 21 );
+    const [puntosMinimos, puntosComputadora]= puntosJugadores;
 
     setTimeout(()=>{ //if se evalua y ejecuta cuando termina el ciclo
         if(puntosComputadora===puntosMinimos){
@@ -101,6 +96,20 @@ const turnoComputadora=(puntosMinimos)=>{
             alert("Computadora gana =(");
         }
     }, 200);
+}
+
+//Turno computadora
+const turnoComputadora=(puntosMinimos)=>{
+
+    let puntosComputadora=0;
+
+    do{
+        const carta= pedirCarta();
+        puntosComputadora= acumularPuntos(carta,puntosJugadores.length -1);
+        crearCarta(carta,puntosJugadores.length -1);
+    } while((puntosComputadora < puntosMinimos) && puntosMinimos <= 21 );
+   
+    determinarGanador();
 }
 //eventos click
 btnPedirCarta.addEventListener("click", ()=>{ //al hacer click en el boón, se realiza la acción dentro de la función
@@ -126,27 +135,16 @@ btnDetener.addEventListener("click",()=>{
     btnPedirCarta.disabled=true;
     btnDetener.disabled=true;
 
-    turnoComputadora(puntosJugador);
+    turnoComputadora(puntosJugadores[0]);
 });
 
 btnNuevoJuego.addEventListener("click", ()=>{
    console.clear();
     iniciarJuego();
-   // mazo=[];
-    //mazo=crearMazo();
-
-    //puntosJugador=0;
-    //puntosComputadora=0;
-
-    //puntosHTML[0].innerText=0;
-    //puntosHTML[1].innerText=0;
-
-    //divCartasJugador.innerText="";
-    //divCartasComputadora.innerText="";
-
-    //btnPedirCarta.disabled=false;
-    //btnDetener.disabled=false;  
 });  
+//este return antes de terminar el módulo permite llamar a la función de manera pública
+//anula el patrón módulo
+return {nuevoJuego: iniciarJuego}
 })();
 
 

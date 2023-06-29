@@ -19,8 +19,9 @@
         <div id="divBotones" class="col text-center">
 
             <button id="btnNuevoJuego" class="btn-danger">Nuevo Juego</button>
-            <button id="btnPedirCarta"class="btn-primary">Pedir Carta</button>
-            <button id="btnDetener" class="btn-secondary">Detener</button>
+            <button id="btnPedirCarta" disabled="disabled" class="btn-primary">Pedir Carta</button>
+            <button id="btnDetener" disabled="disabled" class="btn-secondary">Detener</button>
+        
         </div>
     </div>
 
@@ -46,6 +47,9 @@
     </div>
 
     <script src="assets/js/underscore.js"></script>
-    <script src="assets/js/juego.js"></script>
+    <script src="assets/js/juego-min.js"></script>
+
+    <script> miModulo.nuevoJuego(); </script>
+    
 </body>
 </html>
