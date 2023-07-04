@@ -94,6 +94,7 @@ const determinarGanador=()=>{
         } else{
             alert("Computadora gana =(");
         }
+    }, 1000);
 }
 
 //Turno computadora
