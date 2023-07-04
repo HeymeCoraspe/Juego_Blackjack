@@ -85,7 +85,6 @@ const determinarGanador=()=>{
 
     const [puntosMinimos, puntosComputadora]= puntosJugadores;
 
-    setTimeout(()=>{ //if se evalua y ejecuta cuando termina el ciclo
         if(puntosComputadora===puntosMinimos){
             alert("Nadie gana =(");
         } else if(puntosMinimos>21){
@@ -95,7 +94,6 @@ const determinarGanador=()=>{
         } else{
             alert("Computadora gana =(");
         }
-    }, 1000);
 }
 
 //Turno computadora
